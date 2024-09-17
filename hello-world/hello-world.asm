@@ -1,7 +1,8 @@
-global main
+global _start
 
 section .text
 
-main:
-    mov eax, 0
-    ret
+_start:
+    mov eax, 1
+    mov ebx, 0
+    int 0x80
