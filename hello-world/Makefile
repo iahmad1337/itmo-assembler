@@ -4,7 +4,7 @@ elf32:
 	rm elf32.o
 
 test: elf32
-	./elf32.out && echo "Success" || echo "Fail"
+	./elf32.out && echo "Success" || echo "****FAIL****"
 
 clean:
 	rm *.out
