@@ -4,8 +4,7 @@ extern printf
 section .text
 
 main:
-    mov eax, 42
-    push eax
+    push dword 42
     push format
     call printf
     add esp, 8
