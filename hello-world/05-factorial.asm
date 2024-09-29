@@ -62,9 +62,10 @@ factorial_loop_start:
     pop ecx
 
     push ecx
+    push dword [factorial_input]
     push format
     call printf
-    add esp, 8
+    add esp, 12
 
     add esp, [buffer_size]
 
@@ -74,7 +75,7 @@ factorial_loop_start:
 ; may also be .rdata (or .data for mutable data)
 section .rodata
 format:
-    db "Factorial rendered on stack is %s", 0Ah, 0
+    db "Factorial rendered on stack is %d!=%s", 0Ah, 0
 factorial_input:
     dd 0Ah ; value of which to calculate factorial
 buffer_size:

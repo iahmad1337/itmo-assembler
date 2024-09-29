@@ -1,22 +1,23 @@
-hello-world.out:
-	nasm -g -f elf32 hello-world.asm -o hello-world.o
-	gcc -no-pie -m32 -o hello-world.out hello-world.o
-	rm hello-world.o
+define target_template =
+nasm -g -f elf32 $(1).asm -o $(1).o
+gcc -no-pie -m32 -o $(1).out $(1).o
+rm $(1).o
+endef
 
-04.out:
-	nasm -g -f elf32 04-factorial.asm -o 04.o
-	gcc -no-pie -m32 -o 04.out 04.o
-	rm 04.o
+03-factorial.out:
+	$(call target_template,03-factorial)
 
-05.out:
-	nasm -g -f elf32 05-factorial.asm -o 05.o
-	gcc -no-pie -m32 -o 05.out 05.o
-	rm 05.o
+04-factorial.out:
+	$(call target_template,04-factorial)
 
-test: hello-world.out 04.out 05.out
-	./hello-world.out && echo "Success" || echo "****FAIL****"
-	./04.out && echo "Success" || echo "****FAIL****"
-	./05.out && echo "Success" || echo "****FAIL****"
+05-factorial.out:
+	$(call target_template,05-factorial)
+
+test: 03-factorial.out 04-factorial.out 05-factorial.out
+	./03-factorial.out
+	./04-factorial.out
+	./05-factorial.out
+	echo "Success!"
 
 clean:
 	rm *.out

@@ -45,7 +45,7 @@ render:
     ret
 
 main:
-    mov ecx, 8  ; n for which we search the factorial
+    mov ecx, [factorial_input]
     mov eax, 1
 factorial_loop_start:
     mul ecx
@@ -58,9 +58,10 @@ factorial_loop_start:
     add esp, 8
 
     push dword write_buffer
+    push dword [factorial_input]
     push format
     call printf
-    add esp, 8
+    add esp, 12
 
     xor eax, eax
     ret
@@ -68,7 +69,9 @@ factorial_loop_start:
 ; may also be .rdata (or .data for mutable data)
 section .rodata
 format:
-    db "Factorial rendered on .bss is %s", 0Ah, 0
+    db "Factorial rendered on .bss is %d!=%s", 0Ah, 0
+factorial_input:
+    dd 08h
 ; db - for bytes, dw - words, dd - double words
 ; in nasm the convention is `0Ah` instead of `0xA`
 
