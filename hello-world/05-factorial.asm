@@ -37,7 +37,7 @@ render:
     sub ecx, 1
     add esi, 1
     test esi, ecx
-    jl .reverse_digits_loop
+    jb .reverse_digits_loop
 
     pop esi
     pop ebx
@@ -45,22 +45,28 @@ render:
     ret
 
 main:
-    mov ecx, 8  ; n for which we search the factorial
+    mov ecx, [factorial_input]
     mov eax, 1
 factorial_loop_start:
     mul ecx
     sub ecx, 1
     jnz factorial_loop_start
 
-    push write_buffer
+    sub esp, [buffer_size]
+    mov ecx, esp
+
+    push ecx
     push eax
     call render
-    add esp, 8
+    pop eax
+    pop ecx
 
-    push dword write_buffer
+    push ecx
     push format
     call printf
     add esp, 8
+
+    add esp, [buffer_size]
 
     xor eax, eax
     ret
@@ -68,10 +74,8 @@ factorial_loop_start:
 ; may also be .rdata (or .data for mutable data)
 section .rodata
 format:
-    db "Factorial rendered on .bss is %s", 0Ah, 0
-; db - for bytes, dw - words, dd - double words
-; in nasm the convention is `0Ah` instead of `0xA`
-
-section .bss
-write_buffer:
-    resb 1024
+    db "Factorial rendered on stack is %s", 0Ah, 0
+factorial_input:
+    dd 0Ah ; value of which to calculate factorial
+buffer_size:
+    dd 100h ; 256 bytes for buffer

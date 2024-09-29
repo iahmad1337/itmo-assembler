@@ -19,4 +19,6 @@
         - divisor = arg
         - dividend = edx:eax
         - Result: quotient = eax, residual = edx
+5. Print factorial, render the printed number manually and the buffer must be on
+   the stack
 
