@@ -1,6 +1,5 @@
 #include "nth-prime.h"
 
-#include <vector>
 #include <limits>
 
 int NthPrime(int n) {

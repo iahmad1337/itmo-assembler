@@ -1,3 +1,6 @@
+Тут важно попробовать все состыковки, даже если придется замангленное имя звать! Ну и разные конвенции вызовов.
+В идеальном мире лучше лучше всегда использовать только сишный интерфейс!!!
+
 0) Write a "n-th prime" function in C++ and C
 1) Call the C function from assembler and print the value
 2) Call the C++ function from assembler and print the value
