@@ -1,8 +1,9 @@
-CXX=g++
-VCPKG_ROOT=/home/ahmad/programs/vcpkg/installed/x64-linux
+CXX=clang++
+VCPKG_ROOT=/home/ahmad/programs/vcpkg/installed/x64-linux-clang
 
-CXX_FLAGS=-O2 -c -m32 -std=c++20 -fsanitize=undefined,address
-LINK_FLAGS=-O2 -no-pie -m32 -fsanitize=undefined,address
+# TODO: -O2 after debug
+CXX_FLAGS=-O2 -c -m32 -std=c++20 -g
+LINK_FLAGS=-O2 -no-pie -m32 -g
 
 # CXXFLAGS=-I$(pwd)/installed/x64-linux/include
 # CFLAGS=-I$(pwd)/installed/x64-linux/include

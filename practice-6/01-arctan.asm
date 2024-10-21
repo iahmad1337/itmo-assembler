@@ -28,7 +28,7 @@ arctan_loop:
     ; st4(numerator), st3(2), st2(-x*x), st1(denominator), st0(accumulator)
 
     ; Add current summand to current sum
-    fld st5       ; st5(num), st4, st3, st2(denom), st1(ac), st0 = num, 2, -x*x, denom, ac, numerator
+    fld st4       ; st5(num), st4, st3, st2(denom), st1(ac), st0 = num, 2, -x*x, denom, ac, numerator
     fdiv st0, st2  ; st5(num), st4, st3, st2(denom), st1(ac), st0 = num, 2, -x*x, denom, ac, num / denom
     faddp        ; st4(num), st3, st2, st1(denom), st0(new-ac) = num, 2, -x*x, denom, ac + num / denom
 
@@ -53,13 +53,14 @@ arctan_return:
 
     sub esp, 4
     fst dword [esp]
-    mov eax, [esp]
-    add esp, 4
 
     fstp st4
     fstp st3
     fstp st2
     fstp st1
     fstp st0
+
+    fld dword [esp]  ; put the return value back in st0
+    add esp, 4
 
     ret
