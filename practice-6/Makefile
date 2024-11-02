@@ -2,7 +2,7 @@ CXX=clang++
 VCPKG_ROOT=/home/ahmad/programs/vcpkg/installed/x64-linux-clang
 
 # TODO: -O2 after debug
-CXX_FLAGS=-O2 -c -m32 -std=c++20 -g
+CXX_FLAGS=-O2 -c -m32 -std=c++23 -g
 LINK_FLAGS=-O2 -no-pie -m32 -g
 
 # CXXFLAGS=-I$(pwd)/installed/x64-linux/include
