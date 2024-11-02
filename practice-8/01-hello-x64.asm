@@ -12,7 +12,6 @@ main:
     call printf
 
     xor eax, eax
-    xor rdx, rdx
     add rsp, 8 ; Stack alignment
     ret
 
