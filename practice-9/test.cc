@@ -72,23 +72,34 @@ int main() {
     1,
   };
   std::cout.precision(6);
+  size_t errors = 0;
   for (auto arg : args) {
     const float realValue = std::atan(arg);
     std::cout << "Calculating arctan(" << arg << ")" << std::endl;
     for (uint32_t summands = 0; summands <= 100; summands += 20) {
       auto result = MyArctan(arg, summands);
+      auto error = std::fabs(result - realValue);
       std::cout
         << "    With " << summands << " summands: "
         << result
-        << " (error = " << std::fabs(result - realValue) << ")"
+        << " (error = " << error << ")"
         << std::endl;
+      if (error > 0.01 && summands > 50) {
+        errors++;
+      }
     }
   }
-  constexpr int REPETIIONS = 1'000'000;
+
+  if (errors > 0) {
+    std::cerr << "Encountered " << errors << " errors" << std::endl;
+    return 1;
+  }
+
+  constexpr int REPETIIONS = 100;
   std::vector<double> measurements{REPETIIONS, 0};
 
   std::cout << "\n\n\nStarting the measurements (" << REPETIIONS << " repetitions per call)" << std::endl;
-  for (uint32_t summands = 1; summands <= 1024; summands *= 2) {
+  for (uint32_t summands = 1; summands <= 10'000'000; summands *= 10) {
     measurements.assign(REPETIIONS, 0);
     for (auto& m : measurements) {
       m = measure([&] { MyArctan(args[1], summands); });

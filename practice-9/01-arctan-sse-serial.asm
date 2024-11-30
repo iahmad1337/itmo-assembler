@@ -8,38 +8,30 @@ MyArctan:
     ; fld dword [esp + 4]  ; st0 = x
     mov eax, [esp + 8]  ; eax = n
 
-    movss xmm0, dword [esp + 4]  ; numerator
+    movss xmm0, [esp + 4]  ; numerator
 
-    cvtpi2ps xmm1, [one]  ; denominator
+    movss xmm1, [one]  ; denominator
 
     movss xmm2, xmm0  ; multiplier
     mulss xmm2, xmm2
-    cvtpi2ps xmm3, [minus_one]
-    mulss xmm2, xmm3
+    mulss xmm2, [minus_one]
 
-
-    cvtpi2ps xmm3, [two]  ; summand for denominator
-
-
-    cvtpi2ps xmm4, [zero]  ; accumulator
+    movss xmm4, [zero]  ; accumulator
 
     cmp eax, 0
     jz arctan_return
 arctan_loop:
-    ; Starting loop with
-    ; st4(numerator), st3(2), st2(-x*x), st1(denominator), st0(accumulator)
     movss xmm5, xmm0
     divss xmm5, xmm1
 
     addss xmm4, xmm5
 
     mulss xmm0, xmm2
-    addss xmm1, xmm3
+    addss xmm1, [two]
 
     sub eax, 1
     jnz arctan_loop
 
-; Invariant: the result is in xmm0
 arctan_return:
     sub esp, 4
     movss [esp], xmm4
@@ -53,10 +45,10 @@ arctan_return:
 ; may also be .rdata (or .data for mutable data)
 section .rodata
 zero:
-    dd 00h
+    dd 0.0
 one:
-    dd 01h
+    dd 1.0
 minus_one:
-    dd 0FFFFFFFFh
+    dd -1.0
 two:
-    dd 02h ; value of which to calculate factorial
+    dd 2.0
