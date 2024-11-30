@@ -1,4 +1,4 @@
-CXX=g++
+CXX=clang++
 VCPKG_ROOT=/home/ahmad/programs/vcpkg/installed/x64-linux-clang
 
 # TODO: -O2 after debug

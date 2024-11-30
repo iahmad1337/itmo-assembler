@@ -18,6 +18,14 @@ TODO
 ```
 
 ### Parallel SSE
+Note: xmm registers are independent of FPU, unlike mm registers!
+
+Plan:
+1. numerators are in xmm0, denominators are in xmm1
+2. do the loop by steps of 4 (i = 0; i < n; i += 4), until the desired value is in xmm3
+3. Depending on n % 4 value, load the corresponding float from xmm0 (0-31,
+   32-63, 64-95 or 96-127 bits respectively). Or it just may be a shuffle
+4.
 ```
 TODO
 ```

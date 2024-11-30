@@ -6,8 +6,9 @@
 #include <queue>
 #include <cassert>
 #include <x86intrin.h>
+
 #if defined(__clang__)
-#define __cdecl __cdecl__
+#define __cdecl __cdecl
 #elif defined(__GNUC__) || defined(__GNUG__)
 #define __cdecl __attribute__((__cdecl__))
 #endif

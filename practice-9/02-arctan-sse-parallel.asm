@@ -8,16 +8,18 @@ MyArctan:
     fld dword [esp + 4]  ; st0 = x
     mov eax, [esp + 8]  ; eax = n
 
-    fld st0  ; st1, st0 = x, x
-    fmul st0, st1  ; st1, st0 = x, x*x
-    fldz  ; st2, st1, st0 = x, x*x, 0
-    fsub st0, st1  ; st2(numerator), st1, st0 = x, x*x, -x*x
-    fld1  ; st3(numerator), st2, st1, st0(denominator) = x, x*x, -x*x, 1
-    fldz  ; st4(numerator), st3, st2, st1(denominator), st0(accumulator) = x, x*x, -x*x, 1, 0
-    fld1  ; st5(numerator), st4, st3, st2(denominator), st1(accumulator), st0 = x, x*x, -x*x, 1, 0, 1
-    fadd st0, st0  ; st5(numerator), st4, st3, st2(denominator), st1(accumulator), st0 = x, x*x, -x*x, 1, 0, 2
-    fxch st4  ; st5(numerator), st4, st3, st2(denominator), st1(accumulator), st0 = x, 2, -x*x, 1, 0, 2
-    fstp st0  ; st4(numerator), st3, st2, st1(denominator), st0(accumulator)= x, 2, -x*x, 1, 0
+    movss xmm0, dword [esp + 4]
+
+    ; fld st0  ; st1, st0 = x, x
+    ; fmul st0, st1  ; st1, st0 = x, x*x
+    ; fldz  ; st2, st1, st0 = x, x*x, 0
+    ; fsub st0, st1  ; st2(numerator), st1, st0 = x, x*x, -x*x
+    ; fld1  ; st3(numerator), st2, st1, st0(denominator) = x, x*x, -x*x, 1
+    ; fldz  ; st4(numerator), st3, st2, st1(denominator), st0(accumulator) = x, x*x, -x*x, 1, 0
+    ; fld1  ; st5(numerator), st4, st3, st2(denominator), st1(accumulator), st0 = x, x*x, -x*x, 1, 0, 1
+    ; fadd st0, st0  ; st5(numerator), st4, st3, st2(denominator), st1(accumulator), st0 = x, x*x, -x*x, 1, 0, 2
+    ; fxch st4  ; st5(numerator), st4, st3, st2(denominator), st1(accumulator), st0 = x, 2, -x*x, 1, 0, 2
+    ; fstp st0  ; st4(numerator), st3, st2, st1(denominator), st0(accumulator)= x, 2, -x*x, 1, 0
 
 
 
@@ -49,7 +51,11 @@ arctan_loop:
     sub eax, 1
     jnz arctan_loop
 
-arctan_return:
+; Invariant: the result is in xmm0
+arctan_return_0:
+arctan_return_1:
+arctan_return_2:
+arctan_return_3:
 
     sub esp, 4
     fst dword [esp]
