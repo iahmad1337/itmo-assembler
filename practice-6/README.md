@@ -78,3 +78,16 @@ Starting the measurements (1000000 repetitions per call)
 ```
 
 Judging by the measurements, we have ~9 ticks per summation loop in `MyArctan`.
+
+With higher summands number:
+```
+Starting the measurements (100 repetitions per call)
+    With 1 summands:  avg = 60.37 +- 2.98213 (stddev)
+    With 10 summands:  avg = 150.66 +- 11.5579 (stddev)
+    With 100 summands:  avg = 941.24 +- 74.2955 (stddev)
+    With 1000 summands:  avg = 8745.06 +- 96.4133 (stddev)
+    With 10000 summands:  avg = 87737.8 +- 4989.53 (stddev)
+    With 100000 summands:  avg = 1.00541e+06 +- 10530 (stddev)
+    With 1000000 summands:  avg = 8.93248e+06 +- 59718.9 (stddev)
+    With 10000000 summands:  avg = 8.82784e+07 +- 585351 (stddev)
+```

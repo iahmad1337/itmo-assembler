@@ -78,11 +78,11 @@ int main() {
         << std::endl;
     }
   }
-  constexpr int REPETIIONS = 1'000'000;
+  constexpr int REPETIIONS = 100;
   std::vector<double> measurements{REPETIIONS, 0};
 
   std::cout << "\n\n\nStarting the measurements (" << REPETIIONS << " repetitions per call)" << std::endl;
-  for (uint32_t summands = 1; summands <= 1024; summands *= 2) {
+  for (uint32_t summands = 1; summands <= 10'000'000; summands *= 10) {
     measurements.assign(REPETIIONS, 0);
     for (auto& m : measurements) {
       m = measure([&] { MyArctan(args[1], summands); });
