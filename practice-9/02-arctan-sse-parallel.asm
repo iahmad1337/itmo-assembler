@@ -9,13 +9,13 @@ MyArctan:
     ; [esp + 8] = n
 
     mov eax, [esp + 8]  ; n
+    xor ecx, ecx
+    mov cl, al
+    and cl, 00000011b  ; cl contains offset to the jump table for boundary handling
+    and al, 11111100b
 
-    ; xmm[0..3] are reserved, any other registers may be used for interim
+    ; xmm[0..4] are reserved, any other registers may be used for interim
     ; calculations
-
-    ; Can't just do `movss xmm5, [...]` because this form zero-extends all higher
-    ; 96 bits. So instead we do `movss xmm*, xmm4`
-    movss xmm4, [one]
 
     ;;;;;;;;;;;;;;;;;;;;;;
     ;  Numerator (xmm0)  ;
@@ -24,6 +24,9 @@ MyArctan:
     movss xmm5, [esp + 4]
     mulss xmm5, xmm5
     pshufd xmm5, xmm5, 00000000b  ; [0 0 0 x^2] -> [x^2 x^2 x^2 x^2]
+    ; Can't just do `movss xmm5, [...]` because this form zero-extends all higher
+    ; 96 bits. So instead we do `movss xmm*, xmm4`
+    movss xmm4, [one]
     movss xmm5, xmm4  ; [x^2 x^2 x^2 x^2] -> [x^2 x^2 x^2 1]
 
     pshufd xmm0, xmm0, 00000000b  ; [0 0 0 x] -> [x x x x]
@@ -56,22 +59,47 @@ MyArctan:
     ;;;;;;;;;;;;;;;;;;;;;;;;
     movaps xmm3, [zeroes]  ; [s3 s2 s1 s0] = [0 0 0 0]
 
-    cmp eax, 0
-    jz arctan_return
-arctan_loop:
+    ;;;;;;;;;;;;;;;;;;;;
+    ;  Summand (xmm4)  ;
+    ;;;;;;;;;;;;;;;;;;;;
     movaps xmm4, xmm0
-    divps xmm4, xmm1
+    divps xmm4, xmm1  ; [summand3 summand2 summand1 summand0]
 
+    cmp eax, 0
+    jz arctan_loop_end
+arctan_loop:
     addps xmm3, xmm4
 
     mulps xmm0, xmm2
     addps xmm1, [denominator_summand]
 
-    ; TODO: test with n not divisible by 4
+    movaps xmm4, xmm0
+    divps xmm4, xmm1
+
     sub eax, 4
     jnz arctan_loop
 
+arctan_loop_end:
+    jmp [jump_table + 4 * ecx]
+
+arctan_boundary_0:
+    ; No more summands needed
+    jmp arctan_return
+arctan_boundary_1:
+    andps xmm4, [mask_lower_dwords_1]
+    addps xmm3, xmm4
+    jmp arctan_return
+arctan_boundary_2:
+    andps xmm4, [mask_lower_dwords_2]
+    addps xmm3, xmm4
+    jmp arctan_return
+arctan_boundary_3:
+    andps xmm4, [mask_lower_dwords_3]
+    addps xmm3, xmm4
+    jmp arctan_return
+
 arctan_return:
+
     movaps xmm4, [zeroes]
 
     pshufd xmm4, xmm3, 00001110b
@@ -84,7 +112,6 @@ arctan_return:
 
     sub esp, 4
     movss [esp], xmm4
-    emms
     fld dword [esp]  ; put the return value back in st0
     add esp, 4
 
@@ -107,3 +134,12 @@ denominator_init:
     dd 1.0, 3.0, 5.0, 7.0
 denominator_summand:
     dd 8.0, 8.0, 8.0, 8.0
+
+mask_lower_dwords_1:
+    dd 0FFFFFFFFh, 0, 0, 0
+mask_lower_dwords_2:
+    dd 0FFFFFFFFh, 0FFFFFFFFh, 0, 0
+mask_lower_dwords_3:
+    dd 0FFFFFFFFh, 0FFFFFFFFh, 0FFFFFFFFh, 0
+jump_table:
+    dd arctan_boundary_0, arctan_boundary_1, arctan_boundary_2, arctan_boundary_3

@@ -80,12 +80,25 @@ int main() {
     sqrtf(0.5),
     1,
   };
+  int summandsVariants[] = {
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    10,
+    20,
+    40,
+    80,
+    100,
+  };
   std::cout.precision(6);
   size_t errors = 0;
   for (auto arg : args) {
     const float realValue = std::atan(arg);
     std::cout << "Calculating arctan(" << arg << ")" << std::endl;
-    for (uint32_t summands = 0; summands <= 100; summands += 20) {
+    for (auto summands : summandsVariants) {
       auto result = MyArctan(arg, summands);
       auto error = std::fabs(result - realValue);
 

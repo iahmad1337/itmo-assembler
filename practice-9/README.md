@@ -58,18 +58,19 @@ Starting the measurements (100 repetitions per call)
 ```
 
 ### 2. Parallel SSE
-Note: xmm registers are independent of FPU, unlike mm registers!
+Note: xmm registers are independent of FPU, unlike mm registers! So no need to
+do `emms` at the end of all operations
 
-According to uops.info, `pshufd` has quite a low latency (1 tick)
-
-...
-do the horizontal add at the end
-
-TODO: make boundaries obrabotka
-
-How to deal with the end move?
 ```
-TODO
+Starting the measurements (100 repetitions per call)
+    With 1 summands:  avg = 93.13 +- 5.70378 (stddev)
+    With 10 summands:  avg = 101.81 +- 5.2606 (stddev)
+    With 100 summands:  avg = 202.44 +- 3.70222 (stddev)
+    With 1000 summands:  avg = 4321.24 +- 6.22916 (stddev)
+    With 10000 summands:  avg = 15718.5 +- 1268.69 (stddev)
+    With 100000 summands:  avg = 131305 +- 8045.43 (stddev)
+    With 1000000 summands:  avg = 1.26689e+06 +- 20698.8 (stddev)
+    With 10000000 summands:  avg = 1.25391e+07 +- 29916.5 (stddev)
 ```
 
 # Notes
