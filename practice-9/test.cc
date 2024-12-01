@@ -24,9 +24,13 @@ auto measure(std::invocable auto workload) {
   return end - start;
 }
 
-double heap_sum(const std::ranges::range auto& values) {
+template<typename F>
+double heap_sum(const std::ranges::range auto& values, F&& mapper) {
   assert (!std::ranges::empty(values));
-  std::priority_queue q{std::greater<double>{}, values};
+  std::priority_queue<double, std::vector<double>, std::greater<double>> q;
+  for (const auto& value : values) {
+    q.push(mapper(value));
+  }
   while (q.size() > 1) {
     auto top = q.top();
     q.pop();
@@ -37,6 +41,10 @@ double heap_sum(const std::ranges::range auto& values) {
   return q.top();
 }
 
+double heap_sum(const std::ranges::range auto& values) {
+  return heap_sum(values, [](const auto& x) { return x; });
+}
+
 auto aggregate(const std::ranges::range auto& values) {
   struct {
     double avg = 0;
@@ -44,11 +52,12 @@ auto aggregate(const std::ranges::range auto& values) {
   } statistics;
 
   statistics.avg = heap_sum(values) / std::ranges::size(values);
-  for (const auto& value : values) {
-    statistics.stddev += (value - statistics.avg) * (value - statistics.avg) / std::ranges::size(values);
-  }
-
-  statistics.stddev = std::sqrt(statistics.stddev);
+  statistics.stddev = std::sqrt(
+    heap_sum(
+      values,
+      [&] (double v) { return (v - statistics.avg) * (v - statistics.avg) / std::ranges::size(values); }
+    )
+  );
 
   return statistics;
 }
@@ -79,14 +88,16 @@ int main() {
     for (uint32_t summands = 0; summands <= 100; summands += 20) {
       auto result = MyArctan(arg, summands);
       auto error = std::fabs(result - realValue);
+
+      if (error > 0.01 && summands > 50) {
+        errors++;
+      }
+
       std::cout
         << "    With " << summands << " summands: "
         << result
         << " (error = " << error << ")"
         << std::endl;
-      if (error > 0.01 && summands > 50) {
-        errors++;
-      }
     }
   }
 

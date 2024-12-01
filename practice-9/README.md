@@ -12,6 +12,8 @@ Subtasks:
     to know about memory allocation and how to bypass the SEGFAULT on boundary
     passage
 
+Possible solution to 3.4 is to check for the page boundary: https://stackoverflow.com/questions/37800739/is-it-safe-to-read-past-the-end-of-a-buffer-within-the-same-page-on-x86-and-x64
+
 # Measurements
 - Make sure that Turbo/power saving is turned off. Tutorial for linux: https://askubuntu.com/a/620114 .
   TL;DR: `echo "1" | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo`

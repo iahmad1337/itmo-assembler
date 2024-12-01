@@ -10,8 +10,12 @@ MyArctan:
 
     mov eax, [esp + 8]  ; n
 
-    ; xmm[0..4] are reserved, any other registers may be used for interim
+    ; xmm[0..3] are reserved, any other registers may be used for interim
     ; calculations
+
+    ; Can't just do `movss xmm5, [...]` because this form zero-extends all higher
+    ; 96 bits. So instead we do `movss xmm*, xmm4`
+    movss xmm4, [one]
 
     ;;;;;;;;;;;;;;;;;;;;;;
     ;  Numerator (xmm0)  ;
@@ -20,22 +24,18 @@ MyArctan:
     movss xmm5, [esp + 4]
     mulss xmm5, xmm5
     pshufd xmm5, xmm5, 00000000b  ; [0 0 0 x^2] -> [x^2 x^2 x^2 x^2]
-    movss xmm5, [zero]  ; [x^2 x^2 x^2 x^2] -> [x^2 x^2 x^2 0]
+    movss xmm5, xmm4  ; [x^2 x^2 x^2 x^2] -> [x^2 x^2 x^2 1]
 
     pshufd xmm0, xmm0, 00000000b  ; [0 0 0 x] -> [x x x x]
-    movss xmm0, [zero]  ; [x x x x] -> [x x x 0]
-    mulps xmm0, xmm5  ; [x x x 0] -> [x^3 x^3 x^3 0]
+    mulps xmm0, xmm5  ; [x x x x] -> [x^3 x^3 x^3 x]
 
-    pshufd xmm5, xmm5, 11110000b  ; [x^2 x^2 x^2 0] -> [x^2 x^2 0 0]
-    mulps xmm0, xmm5  ; [x^3 x^3 x^3 0] -> [x^5 x^5 x^3 0]
+    pshufd xmm5, xmm5, 11110000b  ; [x^2 x^2 x^2 1] -> [x^2 x^2 1 1]
+    mulps xmm0, xmm5  ; [x^3 x^3 x^3 x] -> [x^5 x^5 x^3 x]
 
-    pshufd xmm5, xmm5, 11000000b  ; [x^2 x^2 0 0] -> [x^2 0 0 0]
-    mulps xmm0, xmm5  ; [x^5 x^5 x^3 0] -> [x^7 x^5 x^3 0]
+    pshufd xmm5, xmm5, 11000000b  ; [x^2 x^2 1 1] -> [x^2 1 1 1]
+    mulps xmm0, xmm5  ; [x^5 x^5 x^3 x] -> [x^7 x^5 x^3 x]
 
-    movss xmm0, [esp + 4]  ; [x^7 x^5 x^3 0] -> [x^7 x^5 x^3 x]
-    mulps xmm0, [minus_plus_ones]  ; [-x^7 x^5 -x^3 x]
-
-
+    mulps xmm0, [plus_minus_ones]  ; [-x^7 x^5 -x^3 x]
 
     ;;;;;;;;;;;;;;;;;;;;;;;;
     ;  Denominator (xmm1)  ;
@@ -54,7 +54,7 @@ MyArctan:
     ;;;;;;;;;;;;;;;;;;;;;;;;
     ;  Accumulator (xmm3)  ;
     ;;;;;;;;;;;;;;;;;;;;;;;;
-    movaps xmm3, [zeroes]
+    movaps xmm3, [zeroes]  ; [s3 s2 s1 s0] = [0 0 0 0]
 
     cmp eax, 0
     jz arctan_return
@@ -93,21 +93,17 @@ arctan_return:
 
 ; may also be .rdata (or .data for mutable data)
 section .rodata
-zero:
-    dd 0.0
-minus_one:
-    dd -1.0
-two:
-    dd 2.0
+one:
+    dd 1.0
 
 align 16
 zeroes:
     dd 0.0, 0.0, 0.0, 0.0
 ones:
     dd 1.0, 1.0, 1.0, 1.0
-minus_plus_ones:
-    dd -1.0, 1.0, -1.0, 1.0
+plus_minus_ones:
+    dd 1.0, -1.0, 1.0, -1.0
 denominator_init:
-    dd 7.0, 5.0, 3.0, 1.0
+    dd 1.0, 3.0, 5.0, 7.0
 denominator_summand:
     dd 8.0, 8.0, 8.0, 8.0
