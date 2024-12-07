@@ -4,15 +4,18 @@ Do the [arctan](../practice-6) exercise with SSE instead of FPU.
 Subtasks:
 1. Do the serial version (one summand at a time)
 2. Do a parallel "streaming" version (four summands at a time)
-3. Integer arithmetic: `strlen(const char*)`. You can bypass the string bounadary. It's important that short shouldn't
-    3.1. SSE
-    3.2. AVX
-    3.3. (Optional) AVX2
-    3.4. How to not bypass the string boundary? Hint: there's something you need
+3. Upgrade parallel version to x64 (along with tests)
+4. Integer arithmetic: `strlen(const char*)`. You can bypass the string bounadary. It's important that short shouldn't
+    4.1. SSE (xmm)
+    4.2. AVX (ymm)
+    4.3. (Optional) AVX2
+    4.4. How to not bypass the string boundary? Hint: there's something you need
     to know about memory allocation and how to bypass the SEGFAULT on boundary
     passage
 
-Possible solution to 3.4 is to check for the page boundary: https://stackoverflow.com/questions/37800739/is-it-safe-to-read-past-the-end-of-a-buffer-within-the-same-page-on-x86-and-x64
+- Possible solution to 3.4 is to check for the page boundary: https://stackoverflow.com/questions/37800739/is-it-safe-to-read-past-the-end-of-a-buffer-within-the-same-page-on-x86-and-x64
+- Useful commands for boundary check in strlen: `pmovmskb` & `bsf`/`bsr`
+- ptest
 
 # Measurements
 - Make sure that Turbo/power saving is turned off. Tutorial for linux: https://askubuntu.com/a/620114 .
