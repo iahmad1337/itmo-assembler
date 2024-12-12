@@ -17,7 +17,7 @@ MyStrlen:
     xor edx, edx  ; current char
 
     cmp ecx, eax
-    je aligned_loop
+    je aligned_loop_prologue
 beginning_loop:
     mov dl, byte[ecx]
     cmp dl, 0
@@ -26,18 +26,17 @@ beginning_loop:
     add ecx, 1
     add ebx, 1  ; increase string size
     cmp ecx, eax
-    je beginning_loop_end
+    je aligned_loop_prologue
     jmp beginning_loop
 
-beginning_loop_end:
-
 ; Main stage: aligned load and compare
+aligned_loop_prologue:
     mov ecx, eax
+    pxor xmm1, xmm1
 aligned_loop:
     movaps xmm0, [eax]
-    pxor xmm1, xmm1
-    pcmpeqb xmm1, xmm0
-    pmovmskb edx, xmm1  ; if the i-th bit in edx is 1, then we've got a 0-byte
+    pcmpeqb xmm0, xmm1
+    pmovmskb edx, xmm0  ; if the i-th bit in edx is 1, then we've got a 0-byte
 
     or edx, 0x10000
     bsf edx, edx
