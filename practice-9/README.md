@@ -31,7 +31,7 @@ Subtasks:
 Tested on [8265u](https://en.wikichip.org/wiki/intel/core_i5/i5-8265u) with
 turbo turned off and the process assigned to one cpu.
 
-### 1. Serial SSE
+### 1. Serial SSE arctan
 ```
 Starting the measurements (1000000 repetitions per call)
     With 1 summands:  avg = 59.0447 +- 144.223 (stddev)
@@ -60,7 +60,7 @@ Starting the measurements (100 repetitions per call)
     With 10000000 summands:  avg = 1.35839e+08 +- 132703 (stddev)
 ```
 
-### 2. Parallel SSE
+### 2. Parallel SSE arctan
 Note: xmm registers are independent of FPU, unlike mm registers! So no need to
 do `emms` at the end of all operations
 
@@ -74,6 +74,22 @@ Starting the measurements (100 repetitions per call)
     With 100000 summands:  avg = 131305 +- 8045.43 (stddev)
     With 1000000 summands:  avg = 1.26689e+06 +- 20698.8 (stddev)
     With 10000000 summands:  avg = 1.25391e+07 +- 29916.5 (stddev)
+```
+
+### 4. strlen
+
+#### 4.0. Non-SSE implementation
+```
+Starting the measurements (10 repetitions per call)
+    With 1 chars:  avg = 51.6 +- 11.4996 (stddev)
+    With 10 chars:  avg = 63.2 +- 12.8903 (stddev)
+    With 100 chars:  avg = 280.5 +- 43.546 (stddev)
+    With 1000 chars:  avg = 2306.6 +- 22.9922 (stddev)
+    With 10000 chars:  avg = 22591.2 +- 24.3097 (stddev)
+    With 100000 chars:  avg = 242416 +- 22666.6 (stddev)
+    With 1000000 chars:  avg = 2.41891e+06 +- 239869 (stddev)
+    With 10000000 chars:  avg = 2.4131e+07 +- 2.14088e+06 (stddev)
+    With 100000000 chars:  avg = 2.31475e+08 +- 564357 (stddev)
 ```
 
 # Notes
