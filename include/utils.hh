@@ -9,6 +9,7 @@
 #include <x86intrin.h>
 #include <ranges>
 #include <sstream>
+#include <fstream>
 
 #if defined(__clang__)
 #define __cdecl __cdecl
@@ -110,9 +111,28 @@ TStatistics aggregate(const std::ranges::range auto& values) {
   return statistics;
 }
 
-void FixateCore(auto id) {
+inline void FixateCore(int id) {
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
     CPU_SET(id, &cpuset);
     pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset);
+}
+
+inline std::vector<uint8_t> ReadFileBinary(std::string fileName) {
+  std::vector<uint8_t> result;
+
+  std::fstream f(fileName, std::ios::binary | std::ios::ate | std::ios::in);
+
+  char buffer[4096];
+  static_assert(sizeof(buffer) == 4096);
+
+  while (true) {
+    auto read = f.readsome(buffer, sizeof(buffer));
+    if (read == 0) {
+      break;
+    }
+    uint8_t* unsignedBuffer = reinterpret_cast<uint8_t*>(buffer);
+    result.insert(result.end(), unsignedBuffer, unsignedBuffer + read);
+  }
+  return result;
 }

@@ -1,3 +1,0 @@
-CompileFlags:
-  Add: [-O2, -c, -m32, -std=c++20, -g]
-  Compiler: clang++
